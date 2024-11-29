@@ -39,7 +39,7 @@ export default function Agenda() {
   const [hora, setHora] = useState<string>("");
   const [observacoes, setObservacoes] = useState<string>("");
 
-  const [searhDate, setSearchDate] = useState<Date | undefined>(new Date());
+  const [searchDate, setSearchDate] = useState<Date | undefined>(new Date());
   const [searchCliente, setSearchCliente] = useState<string>("");
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function Agenda() {
 
   useEffect(() => {
     loadAgenda();
-  }, [searchCliente, searhDate]);
+  }, [searchCliente, searchDate]);
 
   const loadClientes = async () => {
     try {
@@ -82,8 +82,8 @@ export default function Agenda() {
         const filteredAgendamentos = agendamentos.filter((agendamento: Agenda) => {
           const clienteMatch = searchCliente.length === 0 ||
             clientes.find((cliente) => cliente.id === agendamento.clienteId)?.nome.toLowerCase().includes(searchCliente.toLowerCase());
-          const dataMatch = !searhDate ||
-            new Date(agendamento.data).toDateString() === searhDate.toDateString();
+          const dataMatch = !searchDate ||
+            new Date(agendamento.data).toDateString() === searchDate.toDateString();
           return clienteMatch && dataMatch;
         });
         setAgenda(filteredAgendamentos);
@@ -100,7 +100,7 @@ export default function Agenda() {
     setCliente('');
     setVeiculo('');
     setServico('');
-    setData(new Date());
+    setData(searchDate);
     setHora('');
     setObservacoes('');
   }
@@ -186,7 +186,7 @@ export default function Agenda() {
               value={searchCliente}
               onChange={(e) => setSearchCliente(e.target.value)}
             />
-            <DatePickerDemo date={searhDate} setDate={setSearchDate} />
+            <DatePickerDemo date={searchDate} setDate={setSearchDate} />
           </div>
           <Button
             onClick={() => handleNewAgendament()}
