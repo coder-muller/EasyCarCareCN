@@ -100,7 +100,7 @@ export default function Agenda() {
     setCliente('');
     setVeiculo('');
     setServico('');
-    setData(new Date());
+    setData(searchDate);
     setHora('');
     setObservacoes('');
   }
