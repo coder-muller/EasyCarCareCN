@@ -212,9 +212,13 @@ export default function Agenda() {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 mt-1">
-                  <span className="font-medium">
-                    {clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.marca}
-                    {clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.modelo}
+                  <span className="font-medium flex gap-1">
+                    <span>
+                      {clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.marca}
+                    </span>
+                    <span>
+                      {clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.modelo}
+                    </span>
                   </span>
                   <span className="text-xs text-muted-foreground">
                     ({clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.placa})

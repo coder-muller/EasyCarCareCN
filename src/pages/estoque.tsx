@@ -54,10 +54,10 @@ export default function Estoque() {
     } catch (error) {
       console.error(error);
     }
-  } 
+  }
 
-  const alertEstoque = () => { 
-    produtos.forEach( produto => {
+  const alertEstoque = () => {
+    produtos.forEach(produto => {
       if (produto.quantidade <= 10) {
         toast.warning("Produto " + produto.nome + " está com a quantidade de " + produto.quantidade + "!");
         return;
@@ -118,9 +118,9 @@ export default function Estoque() {
 
         if (response.status === 201) {
           setProdutos([...produtos, response.data]);
-          setNome("");
-          setQuantidade("");
-          setPreco("");
+          setNome(nome)
+          setQuantidade(quantidade);
+          setPreco(preco);
           toast.success("Produto adicionado com sucesso!");
         }
       } catch (error) {

@@ -7,12 +7,6 @@
       "id": "52f14305-7530-4e65-b750-647e8ad9827a"
     },
     {
-      "nome": "Vonixx V-Mol",
-      "quantidade": 5,
-      "preco": 15.8,
-      "id": "f214c0e6-e40e-403c-badc-03e32b2917f3"
-    },
-    {
       "id": "0e87616a-fddb-4f21-8047-947dc3bf27d6",
       "nome": "Shiny",
       "quantidade": 10,
@@ -25,10 +19,10 @@
       "preco": 34.6
     },
     {
-      "id": "e760bfa4-e65e-4191-a1a6-89e33361de14",
-      "nome": "Vonixx Vexus",
-      "quantidade": 6,
-      "preco": 8.2
+      "nome": "APC GÁVEA",
+      "quantidade": 5,
+      "preco": 95,
+      "id": "d333fc3f-0541-4669-bd98-a8076748b367"
     }
   ],
   "clientes": [
@@ -115,6 +109,34 @@
           "placa": "IZT1A22"
         }
       ]
+    },
+    {
+      "id": "105c1932-0034-416f-a16a-29ef608ee978",
+      "nome": "João Pedro Caldeira",
+      "telefone": "53981303030",
+      "veiculos": [
+        {
+          "id": "2835082c-ed19-44a0-9dae-1b1983eb3907",
+          "marca": "Volkswagen",
+          "modelo": "Voyage",
+          "cor": "Azul",
+          "placa": "IHV7D71"
+        }
+      ]
+    },
+    {
+      "id": "e064cd3b-2fa5-4078-ade1-019e6d98af07",
+      "nome": "Douglas",
+      "telefone": "53981303030",
+      "veiculos": [
+        {
+          "id": "89f83c8d-44d4-41e7-a7c8-209722fa3d33",
+          "marca": "Fiat",
+          "modelo": "Brava",
+          "cor": "Branco",
+          "placa": "IJK9999"
+        }
+      ]
     }
   ],
   "agenda": [
@@ -128,18 +150,9 @@
       "observacoes": ""
     },
     {
-      "id": "66650e73-b367-42f8-849f-daf105738e58",
+      "id": "237fc67c-91ef-4299-bdb3-50124d0d2fbe",
       "clienteId": "904b02e3-de42-41d5-9658-e23fa97bbec8",
       "veiculoId": "aa7403e9-c1fb-4a94-b27f-72a11ad09ecd",
-      "servicoId": "5d99ea2f-208e-4e70-ad7e-bb5839181636",
-      "data": "2024-12-12T03:00:00.000Z",
-      "hora": "10:00",
-      "observacoes": ""
-    },
-    {
-      "id": "237fc67c-91ef-4299-bdb3-50124d0d2fbe",
-      "clienteId": "abe17343-46cb-44a0-ab6f-3943c33b6132",
-      "veiculoId": "f57db60c-b0aa-487d-a7d1-ae19ddbdd241",
       "servicoId": "5d99ea2f-208e-4e70-ad7e-bb5839181636",
       "data": "2024-11-29T03:00:00.000Z",
       "hora": "12:00",
@@ -189,6 +202,51 @@
       "data": "2024-12-02T03:00:00.000Z",
       "hora": "14:00",
       "observacoes": "Limpeza basicona sem muito estresse"
+    },
+    {
+      "id": "1214c7f1-5b5d-423b-8543-1105097b2a44",
+      "clienteId": "105c1932-0034-416f-a16a-29ef608ee978",
+      "veiculoId": "2835082c-ed19-44a0-9dae-1b1983eb3907",
+      "servicoId": "5d99ea2f-208e-4e70-ad7e-bb5839181636",
+      "data": "2024-12-02T03:00:00.000Z",
+      "hora": "08:30",
+      "observacoes": "Limpeza bem bem detalhada"
+    },
+    {
+      "id": "d77636a0-9dcc-490d-9f8a-b45defb96a1b",
+      "clienteId": "904b02e3-de42-41d5-9658-e23fa97bbec8",
+      "veiculoId": "aa7403e9-c1fb-4a94-b27f-72a11ad09ecd",
+      "servicoId": "5d99ea2f-208e-4e70-ad7e-bb5839181636",
+      "data": "2024-12-05T03:00:00.000Z",
+      "hora": "13:30",
+      "observacoes": "Muito  pelo de cachorro"
+    },
+    {
+      "id": "d8a75655-ced0-4054-9295-d7438857cdeb",
+      "clienteId": "e064cd3b-2fa5-4078-ade1-019e6d98af07",
+      "veiculoId": "89f83c8d-44d4-41e7-a7c8-209722fa3d33",
+      "servicoId": "5d99ea2f-208e-4e70-ad7e-bb5839181636",
+      "data": "2024-12-04T03:00:00.000Z",
+      "hora": "09:00",
+      "observacoes": ""
+    },
+    {
+      "id": "5d10f804-0fe4-4afe-a8d1-cb36f3b393cc",
+      "clienteId": "105c1932-0034-416f-a16a-29ef608ee978",
+      "veiculoId": "2835082c-ed19-44a0-9dae-1b1983eb3907",
+      "servicoId": "5d99ea2f-208e-4e70-ad7e-bb5839181636",
+      "data": "2024-12-12T03:00:00.000Z",
+      "hora": "13:30",
+      "observacoes": ""
+    },
+    {
+      "id": "bfd78a7a-40b5-4f7e-8c58-e21cbfa8cabe",
+      "clienteId": "ca2a2ecc-ae26-4a71-9d82-c62636c7ffb0",
+      "veiculoId": "b3fe909d-39f6-47c8-ade2-f956ce0e0876",
+      "servicoId": "5d99ea2f-208e-4e70-ad7e-bb5839181636",
+      "data": "2024-12-04T03:00:00.000Z",
+      "hora": "13:30",
+      "observacoes": "Carro de lojista"
     }
   ],
   "servicos": [
