@@ -137,6 +137,20 @@
           "placa": "IJK9999"
         }
       ]
+    },
+    {
+      "id": "42334f1f-7e77-4503-b172-f308d57ba018",
+      "nome": "George Lucas",
+      "telefone": "1295875981",
+      "veiculos": [
+        {
+          "id": "1d997881-db3c-4e8d-b812-0ea9b52c162e",
+          "marca": "Audi",
+          "modelo": "A3",
+          "cor": "Preto",
+          "placa": "ABC1982"
+        }
+      ]
     }
   ],
   "agenda": [
@@ -247,6 +261,15 @@
       "data": "2024-12-04T03:00:00.000Z",
       "hora": "13:30",
       "observacoes": "Carro de lojista"
+    },
+    {
+      "id": "6c342e3a-f4ed-41b9-84bf-40e0d86b32a0",
+      "clienteId": "42334f1f-7e77-4503-b172-f308d57ba018",
+      "veiculoId": "1d997881-db3c-4e8d-b812-0ea9b52c162e",
+      "servicoId": "5d99ea2f-208e-4e70-ad7e-bb5839181636",
+      "data": "2024-12-06T03:00:00.000Z",
+      "hora": "09:00",
+      "observacoes": ""
     }
   ],
   "servicos": [
