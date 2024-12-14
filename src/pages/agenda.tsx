@@ -20,6 +20,7 @@ export interface Agenda {
   data: Date;
   hora: string;
   observacoes: string;
+  finalizado: boolean;
 }
 
 export default function Agenda() {
@@ -162,6 +163,20 @@ export default function Agenda() {
     }
   };
 
+  const finishAgendamento = async (id: string) => {
+    try {
+      const response = await axios.patch(`http://localhost:3000/agenda/${id}`, { finalizado: true });
+      if (response.status === 200) {
+        toast.success("Agendamento finalizado com sucesso!");
+        loadAgenda();
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.error("Erro ao finalizar o agendamento:", error);
+      toast.error("Erro ao finalizar o agendamento.");
+    }
+  }
+
   const openEditDialog = (agendamento: Agenda) => {
     setSelectedAgendamento(agendamento);
     setCliente(agendamento.clienteId);
@@ -177,6 +192,7 @@ export default function Agenda() {
   return (
     <>
       <div className="flex flex-col h-screen w-screen p-4">
+        {/* Cabecalho */}
         <Cabecalho tab="Agenda" />
         <div className="flex flex-col sm:flex-row items-center justify-between w-full mt-8 gap-4">
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -195,13 +211,16 @@ export default function Agenda() {
             Novo Agendamento
           </Button>
         </div>
+
+        {/* Itens da Agenda */}
         <ScrollArea className="h-[calc(100vh-200px)] mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {agenda.map((agendamento: Agenda) => (
               <div
                 key={agendamento.id}
-                className="bg-muted p-3 rounded-md cursor-pointer transition-transform transform hover:scale-101"
-                onClick={() => openEditDialog(agendamento)}
+                className={`bg-muted p-3 rounded-md transition-transform transform hover:scale-101 ${agendamento.finalizado ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                onClick={agendamento.finalizado ? undefined : () => openEditDialog(agendamento)}
+              // Verifica se os itens são finalizados e proibe o edicao caso sim
               >
                 <div className="flex justify-between items-center">
                   <span className="font-medium">
@@ -233,15 +252,36 @@ export default function Agenda() {
                 <p className="text-sm text-muted-foreground mt-2">
                   {agendamento.observacoes}
                 </p>
+                {agendamento.finalizado && (
+                  <span className="text-xs text-muted-foreground mt-2">Finalizado</span>
+                )}
               </div>
             ))}
           </div>
         </ScrollArea>
       </div>
+
+      {/* Edit and Create Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
-          <DialogHeader>Novo Agendamento</DialogHeader>
-          <DialogDescription>Insira os dados do novo agendamento</DialogDescription>
+          {/* Realiza a checagem para saber se o agendamento é novo ou se é uma edição*/}
+          {selectedAgendamento && (
+            <DialogHeader>Editar Agendamento</DialogHeader>
+          )}
+          {!selectedAgendamento && (
+            <DialogHeader>Novo Agendamento</DialogHeader>
+          )}
+
+          {selectedAgendamento && (
+            <DialogDescription>
+              Insira os dados atualizados do agendamento
+            </DialogDescription>
+          )}
+          {!selectedAgendamento && (
+            <DialogDescription>
+              Insira os dados do novo agendamento
+            </DialogDescription>
+          )}
           <form className="flex flex-col gap-4" onSubmit={saveAgendamento}>
             <Select defaultValue={cliente} onValueChange={(e) => setCliente(e)} value={cliente}>
               <SelectTrigger className="w-full">
@@ -302,14 +342,19 @@ export default function Agenda() {
               placeholder="Observações"
             />
             <DialogFooter>
+              {selectedAgendamento && (
+                <>
+                  <Button variant={"destructive"} type="reset" onClick={() => deleteAgendamento(selectedAgendamento.id)}>
+                    Excluir
+                  </Button>
+                  <Button variant={"outline"} type="button" onClick={() => finishAgendamento(selectedAgendamento.id)}>
+                    Finalizar
+                  </Button>
+                </>
+              )}
               <DialogClose asChild>
                 <Button variant="outline" type="reset">Cancelar</Button>
               </DialogClose>
-              {selectedAgendamento && (
-                <Button variant={"destructive"} type="reset" onClick={() => deleteAgendamento(selectedAgendamento.id)}>
-                  Excluir
-                </Button>
-              )}
               <Button type="submit" className="w-full sm:w-auto">
                 Salvar Agendamento
               </Button>
