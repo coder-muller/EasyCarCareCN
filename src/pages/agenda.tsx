@@ -21,6 +21,7 @@ export interface Agenda {
   hora: string;
   observacoes: string;
   finalizado: boolean;
+  preco: number | undefined;
 }
 
 export default function Agenda() {
@@ -38,6 +39,7 @@ export default function Agenda() {
   const [servico, setServico] = useState<string>("");
   const [data, setData] = useState<Date | undefined>(new Date());
   const [hora, setHora] = useState<string>("");
+  const [preco, setPreco] = useState<number | undefined>(0);
   const [observacoes, setObservacoes] = useState<string>("");
 
   const [searchDate, setSearchDate] = useState<Date | undefined>(new Date());
@@ -101,9 +103,18 @@ export default function Agenda() {
     setCliente('');
     setVeiculo('');
     setServico('');
+    setPreco(0);
     setData(searchDate);
     setHora('');
     setObservacoes('');
+  }
+
+  const handleServicoChange = (id: string) => {
+    setServico(id);
+    const servico = servicos.find((servico) => servico.id === id);
+    if (servico) {
+      setPreco(servico.preco);
+    }
   }
 
   const [selectedAgendamento, setSelectedAgendamento] = useState<Agenda | null>(null);
@@ -123,6 +134,7 @@ export default function Agenda() {
       servicoId: servico,
       data,
       hora,
+      preco,
       observacoes,
     };
 
@@ -155,6 +167,7 @@ export default function Agenda() {
       const response = await axios.delete(`http://localhost:3000/agenda/${id}`);
       if (response.status === 200) {
         toast.success("Agendamento excluído com sucesso!");
+        setIsOpen(false);
         loadAgenda();
       }
     } catch (error) {
@@ -182,6 +195,7 @@ export default function Agenda() {
     setCliente(agendamento.clienteId);
     setVeiculo(agendamento.veiculoId);
     setServico(agendamento.servicoId);
+    setPreco(agendamento.preco);
     setData(new Date(agendamento.data));
     setHora(agendamento.hora);
     setObservacoes(agendamento.observacoes);
@@ -252,6 +266,11 @@ export default function Agenda() {
                 <p className="text-sm text-muted-foreground mt-2">
                   {agendamento.observacoes}
                 </p>
+                {typeof agendamento.preco === 'number' && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {agendamento.preco.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}
+                  </p>
+                )}
                 {agendamento.finalizado && (
                   <span className="text-xs text-muted-foreground mt-2">Finalizado</span>
                 )}
@@ -312,20 +331,23 @@ export default function Agenda() {
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <Select defaultValue={servico} onValueChange={(e) => setServico(e)} value={servico}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione um serviço" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {servicos.map((servico: Servico) => (
-                    <SelectItem key={servico.id} value={servico.id}>
-                      {servico.nome}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <div className="w-full flex gap-2">
+              <Select defaultValue={servico} onValueChange={(e) => handleServicoChange(e)} value={servico}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione um serviço" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {servicos.map((servico: Servico) => (
+                      <SelectItem key={servico.id} value={servico.id}>
+                        {servico.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Input type="number" value={preco} onChange={(e) => setPreco(Number(e.target.value))} placeholder="Insira o valor" />
+            </div>
             <div className="w-full flex gap-2">
               <DatePickerDemo date={data} setDate={setData} />
               <Input
