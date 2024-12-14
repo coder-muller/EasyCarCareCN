@@ -16,10 +16,12 @@ export interface Agenda {
   id: string;
   clienteId: string;
   veiculoId: string;
-  servicoId: string;
+  servicoId: Servico[];
   data: Date;
   hora: string;
   observacoes: string;
+  finalizado: boolean;
+  preco: number | undefined;
 }
 
 export default function Agenda() {
@@ -37,6 +39,7 @@ export default function Agenda() {
   const [servico, setServico] = useState<string>("");
   const [data, setData] = useState<Date | undefined>(new Date());
   const [hora, setHora] = useState<string>("");
+  const [preco, setPreco] = useState<number | undefined>(0);
   const [observacoes, setObservacoes] = useState<string>("");
 
   const [searchDate, setSearchDate] = useState<Date | undefined>(new Date());
@@ -100,9 +103,18 @@ export default function Agenda() {
     setCliente('');
     setVeiculo('');
     setServico('');
+    setPreco(0);
     setData(searchDate);
     setHora('');
     setObservacoes('');
+  }
+
+  const handleServicoChange = (id: string) => {
+    setServico(id);
+    const servico = servicos.find((servico) => servico.id === id);
+    if (servico) {
+      setPreco(servico.preco);
+    }
   }
 
   const [selectedAgendamento, setSelectedAgendamento] = useState<Agenda | null>(null);
@@ -122,6 +134,7 @@ export default function Agenda() {
       servicoId: servico,
       data,
       hora,
+      preco,
       observacoes,
     };
 
@@ -154,6 +167,7 @@ export default function Agenda() {
       const response = await axios.delete(`http://localhost:3000/agenda/${id}`);
       if (response.status === 200) {
         toast.success("Agendamento excluído com sucesso!");
+        setIsOpen(false);
         loadAgenda();
       }
     } catch (error) {
@@ -162,11 +176,26 @@ export default function Agenda() {
     }
   };
 
+  const finishAgendamento = async (id: string) => {
+    try {
+      const response = await axios.patch(`http://localhost:3000/agenda/${id}`, { finalizado: true });
+      if (response.status === 200) {
+        toast.success("Agendamento finalizado com sucesso!");
+        loadAgenda();
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.error("Erro ao finalizar o agendamento:", error);
+      toast.error("Erro ao finalizar o agendamento.");
+    }
+  }
+
   const openEditDialog = (agendamento: Agenda) => {
     setSelectedAgendamento(agendamento);
     setCliente(agendamento.clienteId);
     setVeiculo(agendamento.veiculoId);
     setServico(agendamento.servicoId);
+    setPreco(agendamento.preco);
     setData(new Date(agendamento.data));
     setHora(agendamento.hora);
     setObservacoes(agendamento.observacoes);
@@ -177,6 +206,7 @@ export default function Agenda() {
   return (
     <>
       <div className="flex flex-col h-screen w-screen p-4">
+        {/* Cabecalho */}
         <Cabecalho tab="Agenda" />
         <div className="flex flex-col sm:flex-row items-center justify-between w-full mt-8 gap-4">
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -195,13 +225,16 @@ export default function Agenda() {
             Novo Agendamento
           </Button>
         </div>
+
+        {/* Itens da Agenda */}
         <ScrollArea className="h-[calc(100vh-200px)] mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {agenda.map((agendamento: Agenda) => (
               <div
                 key={agendamento.id}
-                className="bg-muted p-3 rounded-md cursor-pointer transition-transform transform hover:scale-101"
-                onClick={() => openEditDialog(agendamento)}
+                className={`bg-muted p-3 rounded-md transition-transform transform hover:scale-101 ${agendamento.finalizado ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                onClick={agendamento.finalizado ? undefined : () => openEditDialog(agendamento)}
+              // Verifica se os itens são finalizados e proibe o edicao caso sim
               >
                 <div className="flex justify-between items-center">
                   <span className="font-medium">
@@ -212,9 +245,13 @@ export default function Agenda() {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 mt-1">
-                  <span className="font-medium">
-                    {clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.marca}
-                    {clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.modelo}
+                  <span className="font-medium flex gap-1">
+                    <span>
+                      {clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.marca}
+                    </span>
+                    <span>
+                      {clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.modelo}
+                    </span>
                   </span>
                   <span className="text-xs text-muted-foreground">
                     ({clientes.find((cliente) => cliente.id === agendamento.clienteId)?.veiculos.find((veiculo) => veiculo.id === agendamento.veiculoId)?.placa})
@@ -229,15 +266,41 @@ export default function Agenda() {
                 <p className="text-sm text-muted-foreground mt-2">
                   {agendamento.observacoes}
                 </p>
+                {typeof agendamento.preco === 'number' && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {agendamento.preco.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}
+                  </p>
+                )}
+                {agendamento.finalizado && (
+                  <span className="text-xs text-muted-foreground mt-2">Finalizado</span>
+                )}
               </div>
             ))}
           </div>
         </ScrollArea>
       </div>
+
+      {/* Edit and Create Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
-          <DialogHeader>Novo Agendamento</DialogHeader>
-          <DialogDescription>Insira os dados do novo agendamento</DialogDescription>
+          {/* Realiza a checagem para saber se o agendamento é novo ou se é uma edição*/}
+          {selectedAgendamento && (
+            <DialogHeader>Editar Agendamento</DialogHeader>
+          )}
+          {!selectedAgendamento && (
+            <DialogHeader>Novo Agendamento</DialogHeader>
+          )}
+
+          {selectedAgendamento && (
+            <DialogDescription>
+              Insira os dados atualizados do agendamento
+            </DialogDescription>
+          )}
+          {!selectedAgendamento && (
+            <DialogDescription>
+              Insira os dados do novo agendamento
+            </DialogDescription>
+          )}
           <form className="flex flex-col gap-4" onSubmit={saveAgendamento}>
             <Select defaultValue={cliente} onValueChange={(e) => setCliente(e)} value={cliente}>
               <SelectTrigger className="w-full">
@@ -268,20 +331,23 @@ export default function Agenda() {
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <Select defaultValue={servico} onValueChange={(e) => setServico(e)} value={servico}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione um serviço" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {servicos.map((servico: Servico) => (
-                    <SelectItem key={servico.id} value={servico.id}>
-                      {servico.nome}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <div className="w-full flex gap-2">
+              <Select defaultValue={servico} onValueChange={(e) => handleServicoChange(e)} value={servico}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione um serviço" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {servicos.map((servico: Servico) => (
+                      <SelectItem key={servico.id} value={servico.id}>
+                        {servico.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Input type="number" value={preco} onChange={(e) => setPreco(Number(e.target.value))} placeholder="Insira o valor" />
+            </div>
             <div className="w-full flex gap-2">
               <DatePickerDemo date={data} setDate={setData} />
               <Input
@@ -298,14 +364,19 @@ export default function Agenda() {
               placeholder="Observações"
             />
             <DialogFooter>
+              {selectedAgendamento && (
+                <>
+                  <Button variant={"destructive"} type="reset" onClick={() => deleteAgendamento(selectedAgendamento.id)}>
+                    Excluir
+                  </Button>
+                  <Button variant={"outline"} type="button" onClick={() => finishAgendamento(selectedAgendamento.id)}>
+                    Finalizar
+                  </Button>
+                </>
+              )}
               <DialogClose asChild>
                 <Button variant="outline" type="reset">Cancelar</Button>
               </DialogClose>
-              {selectedAgendamento && (
-                <Button variant={"destructive"} type="reset" onClick={() => deleteAgendamento(selectedAgendamento.id)}>
-                  Excluir
-                </Button>
-              )}
               <Button type="submit" className="w-full sm:w-auto">
                 Salvar Agendamento
               </Button>
