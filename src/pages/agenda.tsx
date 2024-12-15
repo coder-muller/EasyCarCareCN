@@ -3,6 +3,7 @@ import { Cabecalho } from "../components/cabecalho";
 import { DatePickerDemo } from "../components/datePicker";
 import { Cliente } from "./clientes";
 import { Servico } from "./servicos";
+import { Lancamento } from "./lancamentos";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "../components/ui/dialog";
@@ -21,7 +22,7 @@ export interface Agenda {
   hora: string;
   observacoes: string;
   finalizado: boolean;
-  preco: number | undefined;
+  preco: number;
 }
 
 export default function Agenda() {
@@ -176,11 +177,34 @@ export default function Agenda() {
     }
   };
 
+  const createLancamento = async (id: string) => {
+    const agendamento = agenda.find((agendamento) => agendamento.id === id);
+    if (agendamento) {
+      const lancamentoData: Lancamento = {
+        id: uuid(),
+        descricao: `Servico para ${clientes.find((cliente) => cliente.id === agendamento.clienteId)?.nome}`,
+        data: agendamento.data,
+        valor: agendamento.preco,
+        entrada: true,
+      };
+      try {
+        const response = await axios.post("http://localhost:3000/lancamentos", lancamentoData);
+        if (response.status === 201) {
+          toast.success("Lançamento criado com sucesso!");
+        }
+      } catch (error) {
+        console.error("Erro ao criar o lançamento:", error);
+        toast.error("Erro ao criar o lançamento.");
+      }
+    }
+  }
+
   const finishAgendamento = async (id: string) => {
     try {
       const response = await axios.patch(`http://localhost:3000/agenda/${id}`, { finalizado: true });
       if (response.status === 200) {
         toast.success("Agendamento finalizado com sucesso!");
+        createLancamento(id);
         loadAgenda();
         setIsOpen(false);
       }

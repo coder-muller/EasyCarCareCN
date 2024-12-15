@@ -2,12 +2,16 @@ import { Cabecalho } from "../components/cabecalho";
 import { ScrollArea } from "../components/ui/scroll-area";
 import DatePickerWithRange from "../components/dateRangePicker";
 import { DateRange } from "react-day-picker";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogClose } from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { v4 as uuid } from "uuid";
 import axios from "axios";
 
-export interface lancamento {
+export interface Lancamento {
   id: string
-  clienteId: string
   descricao: string
   data: Date
   valor: number
@@ -16,8 +20,11 @@ export interface lancamento {
 
 
 export default function Lancamentos() {
-  const [lancamentos, setLancamentos] = useState<lancamento[]>([])
+  const [lancamentos, setLancamentos] = useState<Lancamento[]>([])
   const [dateRange, setDateRange] = useState<DateRange>({ from: undefined, to: undefined })
+  const [insertValor, setInsertValor] = useState<number>(0)
+  const [insertDescricao, setInsertDescricao] = useState<string>('')
+  const [isOpen, setIsOpen] = useState<boolean>(false)
 
 
   useEffect(() => {
@@ -60,6 +67,37 @@ export default function Lancamentos() {
     }
   }
 
+  const saveLancamento = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (!insertValor || !insertDescricao) {
+      toast.error('Preencha os campos obrigatórios.')
+      return
+    }
+    const lancamentoData: Lancamento = {
+      id: uuid(),
+      descricao: insertDescricao,
+      data: new Date(),
+      valor: insertValor,
+      entrada: false,
+    }
+    try {
+      const response = await axios.post('http://localhost:3000/lancamentos', lancamentoData)
+      if (response.status === 201) {
+        toast.success('Lancamento criado com sucesso!')
+        loadLancamentos()
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('Erro ao criar lancamento.')
+    }
+    setIsOpen(false)
+  }
+
+  const handleNewLancamento = () => {
+    setIsOpen(true)
+  }
+
   return (
     <>
       {/* Cabecalho */}
@@ -73,6 +111,12 @@ export default function Lancamentos() {
         <ScrollArea className="h-[calc(100vh-200px)] mt-4">
           <div className="flex justify-center items-center gap-2">
             <DatePickerWithRange className="w-full" onChange={(range) => setDateRange(range)} />
+            <Button
+              onClick={() => handleNewLancamento()}
+              className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white"
+            >
+              Adicionar Saída
+            </Button>
           </div>
           <h1 className="text-lg font-bold mt-4">Resumo do período</h1>
           <div className="flex justify-between items-center gap-2">
@@ -94,11 +138,35 @@ export default function Lancamentos() {
                 </div>
               </div>
             ))
-
             }
           </div>
         </ScrollArea>
       </div>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>Nova Saída</DialogHeader>
+          <DialogDescription>Insira os dados da saída</DialogDescription>
+          <form className="flex flex-col gap-4" onSubmit={saveLancamento}>
+            <Input type="number" value={insertValor} onChange={(e) => setInsertValor(Number(e.target.value))} placeholder="Insira o valor" />
+            <Input
+              type="text"
+              value={insertDescricao}
+              onChange={(e) => setInsertDescricao(e.target.value)}
+              placeholder="Observações"
+            />
+            <DialogFooter>
+
+              <DialogClose asChild>
+                <Button variant="outline" type="reset">Cancelar</Button>
+              </DialogClose>
+              <Button type="submit" className="w-full sm:w-auto">
+                Confirmar Saída
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
