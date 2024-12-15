@@ -17,7 +17,7 @@ export interface Agenda {
   id: string;
   clienteId: string;
   veiculoId: string;
-  servicoId: Servico[];
+  servicoId: string;
   data: Date;
   hora: string;
   observacoes: string;
