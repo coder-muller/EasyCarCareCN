@@ -156,12 +156,15 @@ export default function Servicos() {
 
   return (
     <>
+      {/* Cabecalho */}
       <div className="flex flex-col h-screen w-screen p-4 gap-2">
         <Cabecalho tab="Servicos" />
         <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center mt-0 sm:mt-8 gap-2">
           <Input placeholder="Pesquisar..." className="w-full sm:w-auto" onChange={(e) => setServicoSearch(e.target.value)} />
           <Button className="w-full sm:w-auto" onClick={handleOpen}>Novo Serviço</Button>
         </div>
+
+        {/* Lista de servicos */}
         <ScrollArea className="h-[calc(100vh-200px)]">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {servicos.map((servico: Servico) => (
@@ -181,6 +184,8 @@ export default function Servicos() {
           </div>
         </ScrollArea>
       </div>
+
+      {/* Dialog (adicao de servico) */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
